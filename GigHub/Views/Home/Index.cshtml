@@ -1,4 +1,5 @@
-﻿@model IEnumerable<GigHub.Models.Gig>
+﻿@using GigHub.Controllers
+@model IEnumerable<GigHub.Models.Gig>
 @{
     ViewBag.Title = "Home Page";
 }
@@ -18,11 +19,50 @@
             <div class="details">
                 <span class="artist">
                     @gig.Artist.Name
+                    <button data-artist-id="@gig.Artist.Id" class="btn btn-link js-toggle-following">Follow</button>
                 </span>
                 <span class="gerne">
                     @gig.Gerne.Name
                 </span>
+                <button data-gig-id="@gig.Id" class="btn btn-default btn-sm pull-right js-toggle-attendance">Going?</button>
             </div>
         </li>
     }
 </ul>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function() {
+            $(".js-toggle-attendance")
+                .click(function(e) {
+                    var button = $(e.target);
+                    $.post("/api/attendances", { gigId: button.attr("data-gig-id") })
+                .done(function () {
+                    button.off("click");
+
+                    button
+                        .removeClass("btn-default")
+                        .addClass("btn-info")
+                        .text("Going");
+                })
+                .fail(function() {
+                    alert("Something failed!");
+                });
+            });
+
+            $(".js-toggle-following")
+                .click(function (e) {
+                    var button = $(e.target);
+                    $.post("/api/following", { followeeId: button.attr("data-artist-id") })
+                .done(function () {
+                    button.off("click");
+                    button.text("Following");
+                })
+                .fail(function () {
+                    alert("Something failed!");
+                });
+            });
+        });
+    </script>
+}
