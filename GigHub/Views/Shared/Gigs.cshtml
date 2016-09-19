@@ -4,6 +4,17 @@
 }
 
 <h1>@Model.Heading</h1>
+@using (Html.BeginForm("Search", "Gigs"))
+{
+    <div class="form-group">
+        <div class="input-group" id="search-gigs">
+            @Html.TextBoxFor(m => m.SearchTerm, new { @class = "form-control", @placeholder = "Search by artist, gerne..." })
+            <span class="input-group-addon">
+                <i class="glyphicon glyphicon-search"></i>
+            </span>
+        </div>
+    </div>
+}
 <ul class="gigs" style="margin-top: 40px">
     @foreach (var gig in Model.UpcommingGigs.OrderBy(g => g.DateTime))
     {
@@ -19,7 +30,7 @@
             <div class="details">
                 <span class="artist">
                     @gig.Artist.Name
-                    
+
                     @if (gig.IsCanceled)
                     {
                         <span class="label label-warning">Canceled</span>
@@ -33,7 +44,7 @@
                 <span class="gerne">
                     @gig.Gerne.Name
                 </span>
-                
+
                 @if (Model.ShowActions && !gig.IsCanceled)
                 {
                     <button data-gig-id="@gig.Id" class="btn btn-default btn-sm pull-right js-toggle-attendance">Going?</button>
@@ -46,12 +57,12 @@
 @section scripts
 {
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $(".js-toggle-attendance")
-                .click(function(e) {
+                .click(function (e) {
                     var button = $(e.target);
                     $.post("/api/attendances", { gigId: button.attr("data-gig-id") })
-                        .done(function() {
+                        .done(function () {
                             button.off("click");
 
                             button
@@ -59,7 +70,7 @@
                                 .addClass("btn-info")
                                 .text("Going");
                         })
-                        .fail(function() {
+                        .fail(function () {
                             alert("Something failed!");
                         });
                 });
@@ -75,7 +86,7 @@
                 .fail(function () {
                     alert("Something failed!");
                 });
-            });
+                });
         });
     </script>
 }
